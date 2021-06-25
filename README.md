@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/velesov7493/job4j_grabber.svg?branch=dev)](https://travis-ci.com/velesov7493/job4j_grabber)
 # job4j grabber #
 ## Агрегатор Java вакансий ##
 
