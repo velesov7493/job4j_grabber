@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.com/velesov7493/job4j_grabber.svg?branch=dev)](https://travis-ci.com/velesov7493/job4j_grabber)
+[![codecov](https://codecov.io/gh/velesov7493/job4j_grabber/branch/master/graph/badge.svg?token=TOKEN)](https://codecov.io/gh/velesov7493/job4j_grabber)
 # job4j grabber #
 ## Агрегатор Java вакансий ##
 
