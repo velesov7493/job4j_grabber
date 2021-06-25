@@ -1,7 +1,7 @@
 # используем язык java. Travis CI поддерживает другие языки тоже.
 env:
   global:
-    - CODECOV_TOKEN="a63c4119-7fbc-4ad7-a2ef-39cb14a8d6f4"
+    - CODECOV_TOKEN="47b6c95f-283e-4cfe-b7a6-c619bcc8539c"
 
 language: java
 jdk:
