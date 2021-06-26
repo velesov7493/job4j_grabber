@@ -1,4 +1,4 @@
-package job4j.grabber.quartz;
+package ru.job4j.grabber.quartz;
 
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
@@ -16,9 +16,9 @@ public class AlertRabbit {
 
     public static void main(String[] args) {
         try (InputStream in =
-                AlertRabbit.class
-                .getClassLoader()
-                .getResourceAsStream("rabbit.properties")
+                     AlertRabbit.class
+                             .getClassLoader()
+                             .getResourceAsStream("rabbit.properties")
         ) {
             Properties cfg = new Properties();
             cfg.load(in);
