@@ -1,14 +1,10 @@
 package ru.job4j.grabber;
 
-import ru.job4j.grabber.quartz.AlertRabbit;
-
-import java.util.Properties;
+import ru.job4j.grabber.html.SqlRuParser;
 
 public class AppUI {
 
     public static void main(String[] args) {
-        Properties conf = AppSettings.loadProperties();
-        int interval = Integer.parseInt(conf.getProperty("rabbit.interval"));
-        AlertRabbit.run(interval);
+        SqlRuParser.parse("https://www.sql.ru/forum/job-offers");
     }
 }
