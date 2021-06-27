@@ -6,14 +6,17 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.job4j.grabber.utils.SqlRuDateTimeParser;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 public class SqlRuParser {
 
     private static final Logger LOG = LoggerFactory.getLogger(SqlRuParser.class.getName());
 
     public static void parse(String uri) {
+        SqlRuDateTimeParser dtParser = new SqlRuDateTimeParser();
         try {
             Document doc = Jsoup.connect(uri).get();
             Elements tables = doc.select(".forumTable");
@@ -27,9 +30,11 @@ public class SqlRuParser {
                     } else if (td.hasClass("altCol")) {
                         Elements tdChilds = td.children();
                         if (tdChilds.size() == 0) {
+                            String date = td.text();
+                            LocalDateTime dt = dtParser.parse(date);
                             System.out.printf(
-                                    "Дата публикации: %s"
-                                    + System.lineSeparator(), td.text()
+                                    "Даты публикации (text; LocalDatetime): %s; %s"
+                                    + System.lineSeparator(), date, dt
                             );
                         } else {
                             System.out.printf(
