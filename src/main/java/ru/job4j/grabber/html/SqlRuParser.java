@@ -6,48 +6,62 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.job4j.grabber.models.Post;
 import ru.job4j.grabber.utils.SqlRuDateTimeParser;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SqlRuParser {
 
     private static final Logger LOG = LoggerFactory.getLogger(SqlRuParser.class.getName());
 
+    private static void addPostDescription(Post in) {
+        try {
+           Document doc = Jsoup.connect(in.getLink()).get();
+           Elements tables = doc.select(".msgTable");
+           Element topTd = tables.get(0).child(0).child(1).child(1);
+           in.setDescription(topTd.text());
+       } catch (IOException ex) {
+           LOG.error("Ошибка получения деталей поста!", ex);
+       }
+    }
+
     public static void parse(String uri) {
+        List<Post> postList = new ArrayList<>();
         SqlRuDateTimeParser dtParser = new SqlRuDateTimeParser();
         try {
             Document doc = Jsoup.connect(uri).get();
             Elements tables = doc.select(".forumTable");
             Elements rows = tables.get(0).child(0).getElementsByTag("tr");
             for (Element tr : rows) {
+                Post p = new Post();
+                boolean modified = false;
                 for (Element td : tr.getElementsByTag("td")) {
                     if (td.hasClass("postslisttopic")) {
                         Element href = td.child(0);
-                        System.out.println(href.attr("href"));
-                        System.out.println(href.text());
+                        p.setLink(href.attr("href"));
+                        p.setTitle(href.text());
+                        modified = true;
                     } else if (td.hasClass("altCol")) {
                         Elements tdChilds = td.children();
                         if (tdChilds.size() == 0) {
-                            String date = td.text();
-                            LocalDateTime dt = dtParser.parse(date);
-                            System.out.printf(
-                                    "Даты публикации (text; LocalDatetime): %s; %s"
-                                    + System.lineSeparator(), date, dt
-                            );
+                            p.setCreated(dtParser.parse(td.text()));
                         } else {
-                            System.out.printf(
-                                    "Автор: %s"
-                                    + System.lineSeparator(), tdChilds.get(0).text()
-                            );
+                            p.setAuthor(tdChilds.get(0).text());
                         }
+                        modified = true;
                     }
                 }
-                System.out.println("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
+                if (modified) {
+                    addPostDescription(p);
+                    postList.add(p);
+                }
             }
         } catch (IOException ex) {
             LOG.error("Ошибка чтения html-документа по адресу " + uri, ex);
         }
+        postList.forEach(System.out::println);
     }
 }

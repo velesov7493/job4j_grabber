@@ -7,6 +7,7 @@ public class Post {
     private int id;
     private String title;
     private String link;
+    private String author;
     private String description;
     private LocalDateTime created;
 
@@ -52,6 +53,14 @@ public class Post {
         this.created = created;
     }
 
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
     @Override
     public String toString() {
         String ls = System.lineSeparator();
@@ -59,6 +68,7 @@ public class Post {
                 "Post{" + ls
                 + "\tid=" + id + ls
                 + "\ttitle='" + title + '\'' + ls
+                + "\tauthor='" + author + '\'' + ls
                 + "\tlink='" + link + '\'' + ls
                 + "\tdescription='" + description + '\'' + ls
                 + "\tcreated=" + created + ls
