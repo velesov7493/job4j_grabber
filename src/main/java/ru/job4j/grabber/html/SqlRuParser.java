@@ -70,6 +70,7 @@ public class SqlRuParser implements Parse {
             result.setCreated(dtParser.parse(parts[0].trim()));
             result.setDescription(msgTd.text());
             result.setAuthor(authorTd.child(0).text());
+            result.setLink(doc.location());
         } catch (IOException ex) {
             LOG.error("Ошибка получения деталей поста!", ex);
         }
