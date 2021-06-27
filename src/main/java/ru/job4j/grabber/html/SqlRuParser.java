@@ -13,26 +13,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SqlRuParser {
+public class SqlRuParser implements Parse {
 
     private static final Logger LOG = LoggerFactory.getLogger(SqlRuParser.class.getName());
 
-    private static void addPostDescription(Post in) {
-        try {
-           Document doc = Jsoup.connect(in.getLink()).get();
-           Elements tables = doc.select(".msgTable");
-           Element topTd = tables.get(0).child(0).child(1).child(1);
-           in.setDescription(topTd.text());
-       } catch (IOException ex) {
-           LOG.error("Ошибка получения деталей поста!", ex);
-       }
-    }
-
-    public static void parse(String uri) {
+    @Override
+    public List<Post> list(String link) {
         List<Post> postList = new ArrayList<>();
         SqlRuDateTimeParser dtParser = new SqlRuDateTimeParser();
         try {
-            Document doc = Jsoup.connect(uri).get();
+            Document doc = Jsoup.connect(link).get();
             Elements tables = doc.select(".forumTable");
             Elements rows = tables.get(0).child(0).getElementsByTag("tr");
             for (Element tr : rows) {
@@ -55,13 +45,34 @@ public class SqlRuParser {
                     }
                 }
                 if (modified) {
-                    addPostDescription(p);
                     postList.add(p);
                 }
             }
         } catch (IOException ex) {
-            LOG.error("Ошибка чтения html-документа по адресу " + uri, ex);
+            LOG.error("Ошибка чтения html-документа по адресу " + link, ex);
         }
-        postList.forEach(System.out::println);
+        return postList;
+    }
+
+    @Override
+    public Post detail(String link) {
+        Post result = new Post();
+        SqlRuDateTimeParser dtParser = new SqlRuDateTimeParser();
+        try {
+            Document doc = Jsoup.connect(link).get();
+            Elements tables = doc.select(".msgTable");
+            Element titleTd = tables.get(0).child(0).child(0).child(0);
+            Element msgTd = tables.get(0).child(0).child(1).child(1);
+            Element authorTd = tables.get(0).child(0).child(1).child(0);
+            Element msgFooterTd = tables.get(0).child(0).child(2).child(0);
+            result.setTitle(titleTd.text());
+            String[] parts = msgFooterTd.text().split(" \\[");
+            result.setCreated(dtParser.parse(parts[0].trim()));
+            result.setDescription(msgTd.text());
+            result.setAuthor(authorTd.child(0).text());
+        } catch (IOException ex) {
+            LOG.error("Ошибка получения деталей поста!", ex);
+        }
+        return result;
     }
 }
