@@ -1,6 +1,5 @@
 package ru.job4j.grabber;
 
-import ru.job4j.grabber.html.Parse;
 import ru.job4j.grabber.html.SqlRuParser;
 import ru.job4j.grabber.models.Post;
 
