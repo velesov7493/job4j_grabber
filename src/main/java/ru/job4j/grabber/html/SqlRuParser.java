@@ -18,12 +18,15 @@ public class SqlRuParser implements Parse {
     private static final Logger LOG = LoggerFactory.getLogger(SqlRuParser.class.getName());
     private static SqlRuParser instance;
 
-    private SqlRuParser() { }
+    private final SqlRuDateTimeParser dtParser;
+
+    private SqlRuParser() {
+        dtParser = new SqlRuDateTimeParser();
+    }
 
     @Override
     public List<Post> list(String link) {
         List<Post> postList = new ArrayList<>();
-        SqlRuDateTimeParser dtParser = new SqlRuDateTimeParser();
         try {
             Document doc = Jsoup.connect(link).get();
             Elements tables = doc.select(".forumTable");

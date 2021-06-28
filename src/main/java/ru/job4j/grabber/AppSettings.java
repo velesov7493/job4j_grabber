@@ -10,11 +10,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.Set;
 
 public class AppSettings {
 
     private static final Logger LOG = LoggerFactory.getLogger(AppSettings.class.getName());
     private static Properties settings;
+    private static HashMap<String, Parse> parsers;
+
+    private static void defineParsers() {
+        parsers = new HashMap<>();
+        //TODO добавить новые парсеры по мере их определения
+        parsers.put("sql.ru", SqlRuParser.getInstance());
+    }
 
     public static Properties loadProperties() {
         if (settings == null) {
@@ -33,13 +41,33 @@ public class AppSettings {
     }
 
     /**
-     * Получить все активные парсеры системы
-     * @return Карта<Домен,Парсер>
+     * Получить парсер для домена
+     * @param domainName имя домена
+     * @return Parse
      */
 
-    public static HashMap<String, Parse> getParsers() {
-        HashMap<String, Parse> result = new HashMap<>();
-        result.put("sql.ru", SqlRuParser.getInstance());
+    public static Parse getParser(String domainName) {
+        if (parsers == null) {
+            defineParsers();
+        }
+        Parse result = parsers.get(domainName);
+        if (result == null) {
+            throw new IllegalArgumentException(
+                "Парсер для домена " + domainName + " не определен!"
+            );
+        }
         return result;
+    }
+
+    /**
+     * Получить домены, для которых определены парсеры
+     * @return Множество доменных имен
+     */
+
+    public static Set<String> getDefinedDomains() {
+        if (parsers == null) {
+            defineParsers();
+        }
+        return parsers.keySet();
     }
 }

@@ -8,8 +8,8 @@ import ru.job4j.grabber.*;
 import ru.job4j.grabber.html.Parse;
 import ru.job4j.grabber.repositories.Store;
 
-import java.util.HashMap;
 import java.util.Properties;
+import java.util.Set;
 
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
@@ -20,11 +20,11 @@ public class Grabber implements Grab {
     private static final Logger LOG = LoggerFactory.getLogger(Grabber.class.getName());
 
     private final Properties cfg;
-    private final HashMap<String, Parse> parsers;
+    private final Store store;
 
-    public Grabber() {
+    public Grabber(Store aStore) {
         cfg = AppSettings.loadProperties();
-        parsers = AppSettings.getParsers();
+        store = aStore;
     }
 
     private Scheduler scheduler() throws SchedulerException {
@@ -33,11 +33,17 @@ public class Grabber implements Grab {
         return scheduler;
     }
 
-    private void scheduleSqlRuJob(Scheduler scheduler, Store store) throws SchedulerException {
+    private void scheduleJob(String domainName, Scheduler scheduler) throws SchedulerException {
+        Parse parser = AppSettings.getParser(domainName);
         JobDataMap data = new JobDataMap();
         data.put("store", store);
-        data.put("parse", parsers.get("sql.ru"));
-        JobDetail job = newJob(GrabSqlRuJob.class)
+        data.put("parse", parser);
+        Class<? extends Job> jobClass;
+        switch (domainName) {
+            case "sql.ru": jobClass = GrabSqlRuJob.class; break;
+            default: return;
+        }
+        JobDetail job = newJob(jobClass)
                 .usingJobData(data)
                 .build();
         SimpleScheduleBuilder times = simpleSchedule()
@@ -51,10 +57,13 @@ public class Grabber implements Grab {
     }
 
     @Override
-    public void init(Store store) {
+    public void runJobs() {
         try {
             Scheduler scheduler = scheduler();
-            scheduleSqlRuJob(scheduler, store);
+            Set<String> domains = AppSettings.getDefinedDomains();
+            for (String domain : domains) {
+                scheduleJob(domain, scheduler);
+            }
         } catch (SchedulerException ex) {
             LOG.error("Ошибка включения задания в расписание!", ex);
         }

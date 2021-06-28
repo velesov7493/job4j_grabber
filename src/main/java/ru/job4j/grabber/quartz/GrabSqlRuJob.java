@@ -12,6 +12,8 @@ import ru.job4j.grabber.models.Post;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class GrabSqlRuJob implements Job {
@@ -28,9 +30,13 @@ public class GrabSqlRuJob implements Job {
             String page = i == 1 ? "" : "/" + i;
             posts.addAll(parse.list("https://www.sql.ru/forum/job-offers" + page));
         }
+        Pattern ptJava = Pattern.compile("^.*\\bjava\\b.*$");
         List<Post> javaPosts =
                 posts.stream()
-                .filter((p) -> p.getTitle().toLowerCase().contains("java"))
+                .filter((p) -> {
+                    Matcher m = ptJava.matcher(p.getTitle().toLowerCase());
+                    return m.matches();
+                })
                 .map((p) -> parse.detail(p.getLink()))
                 .collect(Collectors.toList());
         int newPostsCount = 0;

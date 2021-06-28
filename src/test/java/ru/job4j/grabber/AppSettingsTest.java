@@ -11,7 +11,7 @@ public class AppSettingsTest {
     @Test
     public void whenLoadProperties() {
         Properties ps = AppSettings.loadProperties();
-        assertEquals("5", ps.getProperty("rabbit.interval"));
+        assertEquals("60", ps.getProperty("grabber.interval"));
         assertEquals("org.postgresql.Driver", ps.getProperty("jdbc.driver"));
         assertEquals("jdbc:postgresql://localhost:5432/grabber_db", ps.getProperty("jdbc.url"));
         assertEquals("root", ps.getProperty("jdbc.username"));
