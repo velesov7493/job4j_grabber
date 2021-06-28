@@ -2,6 +2,7 @@ package ru.job4j.grabber.models;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 public class Post {
 
@@ -67,12 +68,12 @@ public class Post {
         String ls = System.lineSeparator();
         return
                 "Post{" + ls
-                + "\tid=" + id + ls
-                + "\ttitle='" + title + '\'' + ls
-                + "\tauthor='" + author + '\'' + ls
-                + "\tlink='" + link + '\'' + ls
-                + "\tdescription='" + description + '\'' + ls
-                + "\tcreated=" + created + ls
+                + "id=" + id + ls
+                + "title='" + title + '\'' + ls
+                + "author='" + author + '\'' + ls
+                + "link='" + link + '\'' + ls
+                + "created=" + created + ls
+                + "description='" + description + '\'' + ls
                 + '}';
     }
 
