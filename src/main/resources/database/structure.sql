@@ -1,10 +1,4 @@
-DROP TABLE IF EXISTS tz_rabbits;
 DROP TABLE IF EXISTS tz_posts;
-
-CREATE TABLE tz_rabbits (
-    id SERIAL PRIMARY KEY,
-    created_date TIMESTAMP
-);
 
 CREATE TABLE tz_posts (
     id SERIAL PRIMARY KEY,

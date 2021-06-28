@@ -6,7 +6,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.job4j.grabber.Parse;
 import ru.job4j.grabber.models.Post;
 import ru.job4j.grabber.utils.SqlRuDateTimeParser;
 
@@ -17,6 +16,9 @@ import java.util.List;
 public class SqlRuParser implements Parse {
 
     private static final Logger LOG = LoggerFactory.getLogger(SqlRuParser.class.getName());
+    private static SqlRuParser instance;
+
+    private SqlRuParser() { }
 
     @Override
     public List<Post> list(String link) {
@@ -76,5 +78,12 @@ public class SqlRuParser implements Parse {
             LOG.error("Ошибка получения деталей поста!", ex);
         }
         return result;
+    }
+
+    public static SqlRuParser getInstance() {
+        if (instance == null) {
+            instance = new SqlRuParser();
+        }
+        return instance;
     }
 }

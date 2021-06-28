@@ -2,7 +2,6 @@ package ru.job4j.grabber.repositories;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.job4j.grabber.Store;
 import ru.job4j.grabber.database.DbUtils;
 import ru.job4j.grabber.models.Post;
 
@@ -21,7 +20,8 @@ public class PsqlPostStore implements Store, AutoCloseable {
     }
 
     @Override
-    public void save(Post post) {
+    public boolean save(Post post) {
+        boolean result = false;
         String query =
                 "INSERT INTO tz_posts (name, link, authorName, text, created)"
                 + " VALUES (?, ?, ?, ?, ?);";
@@ -37,9 +37,13 @@ public class PsqlPostStore implements Store, AutoCloseable {
                 post.setId(keys.getInt(1));
             }
             keys.close();
+            result = true;
         } catch (SQLException ex) {
-            LOG.error("Ошибка записи вакансии!", ex);
+            if (ex.getErrorCode() != 0) {
+                LOG.error("Ошибка записи вакансии! ", ex);
+            }
         }
+        return result;
     }
 
     @Override
