@@ -8,6 +8,7 @@ import ru.job4j.grabber.quartz.Grabber;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.SoftReference;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.Set;
@@ -15,7 +16,7 @@ import java.util.Set;
 public class AppSettings {
 
     private static final Logger LOG = LoggerFactory.getLogger(AppSettings.class.getName());
-    private static Properties settings;
+    private static SoftReference<Properties> settings;
     private static HashMap<String, Parse> parsers;
 
     private static void defineParsers() {
@@ -25,19 +26,21 @@ public class AppSettings {
     }
 
     public static Properties loadProperties() {
-        if (settings == null) {
-            settings = new Properties();
+        Properties s = settings == null ? null : settings.get();
+        if (s == null) {
+            s = new Properties();
             try (InputStream in =
                          Grabber.class
-                                 .getClassLoader()
-                                 .getResourceAsStream("grabber.properties")
+                         .getClassLoader()
+                         .getResourceAsStream("grabber.properties")
             ) {
-                settings.load(in);
+                s.load(in);
+                settings = new SoftReference<>(s);
             } catch (IOException ex) {
                 LOG.error("Ошибка загрузки свойств из ресурса!", ex);
             }
         }
-        return settings;
+        return s;
     }
 
     /**
